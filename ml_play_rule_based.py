@@ -2,25 +2,9 @@
 from mlgame.communication import ml as comm
 
 def ml_loop(side: str):
-    """
-    The main loop for the machine learning process
-
-    The `side` parameter can be used for switch the code for either of both sides,
-    so you can write the code for both sides in the same script. Such as:
-    ```python
-    if side == "1P":
-        ml_loop_for_1P()
-    else:
-        ml_loop_for_2P()
-    ```
-
-    @param side The side which this script is executed for. Either "1P" or "2P".
-    """
-
     # === Here is the execution order of the loop === #
     # 1. Put the initialization code here
     ball_served = False
-    prev_ball_coor = (0,0)
 
     def direction(esti, curPos):
         if curPos + 20  < esti - 5: return 1 #right
@@ -41,14 +25,13 @@ def ml_loop(side: str):
         if scene_info["status"] != "GAME_ALIVE":
             # Do some updating or resetting stuff
             ball_served = False
-            prev_ball_coor = (0,0)
             # 3.2.1 Inform the game process that
             #       the ml process is ready for the next round
             comm.ml_ready()
             continue
 
         # 3.3 Put the code here to handle the scene information
-        esti_ball_x = calculate(prev_ball_coor[0], prev_ball_coor[1], scene_info["ball"][0], scene_info["ball"][1], side)
+        esti_ball_x = calculate(scene_info["ball_speed"][0], scene_info["ball_speed"][1], scene_info["ball"][0], scene_info["ball"][1], side)
         if side == "1P":
             platform = scene_info["platform_1P"][0]
         else:
@@ -67,13 +50,9 @@ def ml_loop(side: str):
                 comm.send_to_game({"frame": scene_info["frame"], "command": "MOVE_RIGHT"})
             else:
                 comm.send_to_game({"frame": scene_info["frame"], "command": "MOVE_LEFT"})
-        
-        prev_ball_coor = (scene_info["ball"][0], scene_info["ball"][1])
 
-def calculate(prev_ball_x, prev_ball_y, cur_ball_x, cur_ball_y, side):
+def calculate(direct_x, direct_y, cur_ball_x, cur_ball_y, side):
     # change pivot to center
-    prev_ball_x += 2
-    prev_ball_y += 2
     cur_ball_x += 2
     cur_ball_y += 2
 
@@ -82,14 +61,11 @@ def calculate(prev_ball_x, prev_ball_y, cur_ball_x, cur_ball_y, side):
     else:
         cross = 80
     
-    try:
-        m = (cur_ball_y - prev_ball_y)/(cur_ball_x - prev_ball_x)
-    except ZeroDivisionError:
-        m = (cur_ball_y - prev_ball_y)/(cur_ball_x - prev_ball_x + 1)
+    m = direct_y/(direct_x if direct_x != 0 else 1)
     # (y - y0) = m(x - x0)
     # (x - x0) = (y - y0)/m
     # x        = (y - y0)/m + x0
-    candidate = (cross - cur_ball_y)/(m if m != 0 else 1) + cur_ball_x -2
+    candidate = (cross - cur_ball_y)/(m if m!= 0 else 1) + cur_ball_x -2
     if candidate >= 0 and candidate <= 200:
         return candidate
     elif candidate > 200:
