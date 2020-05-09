@@ -44,7 +44,7 @@ def updataData(log):
 
 
 if __name__ == '__main__':
-    filename = path.join(path.dirname(__file__), 'log', '1.pickle')
+    filename = path.join(path.dirname(__file__), 'log', '37.pickle')
     log = pickle.load((open(filename, 'rb')))
     for i in log:
         i["esti_1P"] = calculate(i["ball_speed"][0], i["ball_speed"][1], i["ball"][0], i["ball"][1], "1P")
@@ -53,11 +53,7 @@ if __name__ == '__main__':
         #print(i)
 
     #change to correct estimation, please change all numbers here for each case
-    for i in range(1837,1845):
-        log[i]["esti_1P"] = 30.0
-    
-    #use to check processed data
-    #for i in log: print(i)
+    #for i in range(1535,1556): log[i]["esti_2P"] = 43.0
 
 
     #!!!This will change data.pickle, be sure to comment out if not in use!!!
