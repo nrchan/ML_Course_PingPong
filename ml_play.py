@@ -4,6 +4,7 @@ import os
 import pickle
 import numpy as np
 import random
+import gzip
 
 def direction(esti, curPos):
         if curPos + 20  < esti - 1: return 1 #right
@@ -18,7 +19,7 @@ def ml_loop(side: str):
     ini_move = random.randrange(-16,16)
     serv_dir = random.choice(["l","r"])
     """
-    with open(os.path.join(os.path.dirname(__file__), 'save', 'model_test'), 'rb') as f:
+    with gzip.open(os.path.join(os.path.dirname(__file__), 'save', 'model_test_s'), 'rb') as f:
         model = pickle.load(f)
 
     # 2. Inform the game process that ml process is ready
