@@ -39,10 +39,10 @@ def ml_loop(side: str):
     """
     model = []
     if side == "1P":
-        with open(os.path.join(os.path.dirname(__file__), 'save', 'model1-knnr'), 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'save', 'model1'), 'rb') as f:
             model = pickle.load(f)
     else:
-        with open(os.path.join(os.path.dirname(__file__), 'save', 'model-test'), 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'save', 'model2'), 'rb') as f:
             model = pickle.load(f)
 
     # 2. Inform the game process that ml process is ready
